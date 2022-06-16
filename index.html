@@ -10,7 +10,8 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <style>
-    p, div {
+    p,
+    div {
         text-align: center;
     }
 </style>
@@ -18,6 +19,19 @@
 <body>
 
     <p>SG Crime Bar Chart</p>
+    <!-- Add 2 buttons -->
+    <div><button onclick="update('2020')">2020</button>
+        <button onclick="update('2019')">2019</button>
+        <button onclick="update('2018')">2018</button>
+        <button onclick="update('2017')">2017</button>
+        <button onclick="update('2016')">2016</button>
+        <button onclick="update('2015')">2015</button>
+        <button onclick="update('2014')">2014</button>
+        <button onclick="update('2013')">2013</button>
+        <button onclick="update('2012')">2012</button>
+        <button onclick="update('2011')">2011</button>
+    </div>
+
     <!-- Create a div where the graph will take place -->
     <div id="my_dataviz"></div>
 
@@ -33,138 +47,144 @@
     <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
 
     <script>
-        // Pull data
-        console.log("Fetching data gov Major Offences");
-        fetch('https://data.gov.sg/api/action/datastore_search?resource_id=83c21090-bd19-4b54-ab6b-d999c251edcf&q=2020')
-            .then(response => response.json())
-            // .then(data => console.log(data.result.records))
-            .then(function (data) {
-                appendData(data.result.records)
-            });
-        // .then(data => console.log(data.items[0].carpark_data.length));
+    // Problem 1: What type of serious crime was most common in SG 2020?
 
-        function appendData(data) {        
-        
-            // console.log(data)
+    // Problem 2: Present Problem Hypothesis in simple chart
+    // Add Interaction/Annotation to help present story
 
-        // Problem 1: What type of serious crime was most common in SG 2020?
-        
-        // Problem 2: Present Problem Hypothesis in simple chart
-        // Add Interaction/Annotation to help present story
-        
-        // Requirements:
-        // Chart must be generated (not static image) & publishedd to web repository
+    // Requirements:
+    // Chart must be generated (not static image) & publishedd to web repository
 
-            //Start Chart
-            // set the dimensions and margins of the graph
-            var margin = { top: 30, right: 30, bottom: 100, left: 60 },
-                width = 1000 - margin.left - margin.right,
-                height = 675 - margin.top - margin.bottom;
-            // var margin = { top: 30, right: 30, bottom: 70, left: 60 },
-            //     width = 460 - margin.left - margin.right,
-            //     height = 400 - margin.top - margin.bottom;
+    //Start Chart
+    // set the dimensions and margins of the graph
+    var margin = { top: 30, right: 30, bottom: 100, left: 60 },
+        width = 1000 - margin.left - margin.right,
+        height = 675 - margin.top - margin.bottom;
+    // var margin = { top: 30, right: 30, bottom: 70, left: 60 },
+    //     width = 460 - margin.left - margin.right,
+    //     height = 400 - margin.top - margin.bottom;
 
-            // Extra Challenge
-            // https://d3-graph-gallery.com/graph/interactivity_tooltip.html
-            // Add simple interactivity like mouseover tooltips
-            // create a tooltip
-            var Tooltip = d3.select("#div_template")
-                .append("div")
-                .style("opacity", 0)
-                .attr("class", "tooltip")
-                .style("background-color", "white")
-                .style("border", "solid")
-                .style("border-width", "2px")
-                .style("border-radius", "5px")
-                .style("padding", "5px")
+    // Extra Challenge
+    // https://d3-graph-gallery.com/graph/interactivity_tooltip.html
+    // Add simple interactivity like mouseover tooltips
+    // create a tooltip
+    var Tooltip = d3.select("#div_template")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
 
-            // Three function that change the tooltip when user hover / move / leave a cell
-            var mouseover = function (d) {
-                Tooltip
-                    .style("opacity", 1)
-                d3.select(this)
-                    .style("stroke", "black")
-                    .style("opacity", 1)
-            }
-            var mousemove = function (d) {
-                Tooltip
-                    .html("Total Cases: " + d.value)
-                    .style("left", (d3.mouse(this)[0] + 70) + "px")
-                    .style("top", (d3.mouse(this)[1]) + "px")
-            }
-            var mouseleave = function (d) {
-                Tooltip
-                    .style("opacity", 0)
-                d3.select(this)
-                    .style("stroke", "none")
-                    .style("opacity", 0.8)
-            }
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function (d) {
+        Tooltip
+            .style("opacity", 1)
+        d3.select(this)
+            .style("stroke", "black")
+            .style("opacity", 1)
+    }
+    var mousemove = function (d) {
+        Tooltip
+            .html("Total Cases: " + d.value)
+            .style("left", (d3.mouse(this)[0] + 70) + "px")
+            .style("top", (d3.mouse(this)[1]) + "px")
+    }
+    var mouseleave = function (d) {
+        Tooltip
+            .style("opacity", 0)
+        d3.select(this)
+            .style("stroke", "none")
+            .style("opacity", 0.8)
+    }
 
-            console.log("height:" + height + " width: " + width);
-            console.log("MT:" + margin.top + " MB: " + margin.bottom);
-            console.log("ML:" + margin.left + " MR: " + margin.righ);
+    // console.log("height:" + height + " width: " + width);
+    // console.log("MT:" + margin.top + " MB: " + margin.bottom);
+    // console.log("ML:" + margin.left + " MR: " + margin.right);
 
-            // append the svg object to the body of the page
-            var svg = d3.select("#my_dataviz")
-                .append("svg")
-                // EC: Make sure chart is responsive to viewport
-                .attr("preserveAspectRatio", "xMinYMin meet")
-                .attr("viewBox", "-250 0 1500 675")
-                // .attr("width", width + margin.left + margin.right)
-                // .attr("height", height + margin.top + margin.bottom)
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+        .append("svg")
+        // EC: Make sure chart is responsive to viewport
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "-325 0 1550 675")
+        // .attr("width", width + margin.left + margin.right)
+        // .attr("height", height + margin.top + margin.bottom) 
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-                    .append("g")
-                    .attr("transform",
-                        "translate(" + margin.left + "," + margin.top + ")");
+    // Initialize the X axis
+    var x = d3.scaleBand()
+        .range([0, width])
+        .padding(0.2);
+    var xAxis = svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
 
-            // // Parse the Data
-            // d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/7_OneCatOneNum_header.csv", function (data) {
+    // Initialize the Y axis
+    var y = d3.scaleLinear()
+        .range([height, 0]);
+    var yAxis = svg.append("g")
+        .attr("class", "myYaxis")
+    console.log("initialisation done")
 
-                // X axis
-                var x = d3.scaleBand()
-                    .range([0, width])
-                    .domain(data.map(function (d) { return d.level_2; }))
-                    .padding(0.2);
-                svg.append("g")
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(d3.axisBottom(x))
-                    .selectAll("text")
-                    .attr("transform", "translate(-10,0)rotate(-45)")
-                    .style("text-anchor", "end");
+        function update(selectedVar) {
+            // Pull data
+    d3.json("https://data.gov.sg/api/action/datastore_search?resource_id=83c21090-bd19-4b54-ab6b-d999c251edcf", function (data) {
 
-                // Add Y axis
-                // console.log("d-value");
-                var y = d3.scaleLinear()
-                    .domain([0, d3.max(data, function(d) { console.log(d.value); return +d.value;})])
-                    .range([height, 0]);
-                svg.append("g")
-                    .call(d3.axisLeft(y));
+                       console.log("checkData");
+                       console.log(data);
+                console.log(data.result.records);
 
-                // Bars
-                svg.selectAll("mybar")
-                    .data(data)
-                    .enter()
-                    .append("rect")
-                        .attr("x", function (d) {return x(d.level_2); })
+                console.log(data.result.records);
+                console.log(data.result.records[0]); //object - level_1, level_2,value, year, _id
+                console.log(data.result.records[0].year); //year
+                // appendData(data.result);
+
+                data = data.result.records;
+
+                //filter data according to selected year
+                var newData = data.filter(function(el) {
+                    return el.year == selectedVar
+                });
+                // console.log(newData);
+
+                data = newData;
+
+                console.log("Check new Data");
+                console.log(data);
+                    // X axis
+                    x.domain(data.map(function (d) { console.log(d.group); return d.level_2; }))
+                    xAxis.transition().duration(1000).call(d3.axisBottom(x))
+
+                    // Add Y axis
+                    y.domain([0, d3.max(data, function (d) { return +d.value })]);
+                    yAxis.transition().duration(1000).call(d3.axisLeft(y));
+
+                    // variable u: map data to existing bars
+                    var u = svg.selectAll("rect")
+                        .data(data)
+
+                    // update bars
+                    u
+                        .enter()
+                        .append("rect")
+                        .on("mouseover", mouseover)
+                        .on("mousemove", mousemove)
+                        .on("mouseleave", mouseleave)
+                        .merge(u)
+                        .transition()
+                        .duration(1000)
+                        .attr("x", function (d) { return x(d.level_2); })
+                        .attr("y", function (d) { return y(d.value); })
                         .attr("width", x.bandwidth())
+                        .attr("height", function (d) { return height - y(d.value); })
                         .attr("fill", "#69b3a2")
-                        // no bar at the beginning thus:
-                        .attr("height", function (d) { return height - y(0); }) // always equal to 0
-                        // .attr("height", function (d) { return height - y(d.value); }) // always equal to 0
-                        // .attr("y", function (d) { return y(d.value); })
-                        .attr("y", function (d) { return y(0); })
-                    .on("mouseover", mouseover)
-                    .on("mousemove", mousemove)
-                    .on("mouseleave", mouseleave)
 
-                // // Animation
-                svg.selectAll("rect")
-                    .transition()
-                    .duration(800)
-                    .attr("y", function (d) { return y(d.value); })
-                    .attr("height", function (d) { return height - y(d.value); })
-                    .delay(function (d, i) { console.log(i); return (i * 100) })
-                
+                 
+            })};//update
 
         // Extra Challenge
         // CSS framework to help layout stuff?
@@ -173,8 +193,25 @@
         // Broaden the use case to look at years beyond 2020 - what larger trends can I see?
         // Either extend current bar chart with animation tweening to show trend changes over the years or come up with a new visualization idiom for comparison.
 
+        // // variable u: map data to existing bars
+        //     var u = svg.selectAll("rect")
+        //         .data(data)
+
+        //     // update bars
+        //     u
+        //         .enter()
+        //         .append("rect")
+        //         .merge(u)
+        //         .transition()
+        //         .duration(1000)
+        //         .attr("x", function (d) { return x(d.group); })
+        //         .attr("y", function (d) { return y(d[selectedVar]); })
+        //         .attr("width", x.bandwidth())
+        //         .attr("height", function (d) { return height - y(d[selectedVar]); })
+        //         .attr("fill", "#69b3a2")
             //End  Chart
-        } //appendData function
+        
+        update('2020');
     </script>
 </body>
 
