@@ -16,9 +16,13 @@
 </style>
 
 <body>
+
     <p>SG Crime Bar Chart</p>
     <!-- Create a div where the graph will take place -->
     <div id="my_dataviz"></div>
+
+    <!-- Create a div where the graph will take place -->
+    <div id="div_template"></div>
 
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
@@ -40,16 +44,8 @@
         // .then(data => console.log(data.items[0].carpark_data.length));
 
         function appendData(data) {        
-        // Extra Challenge (TBC)
-        //Add simple interactivity like mouseover tooltips
-        // Make sure chart is responsive to viewport
-        // CSS framework to help layout stuff?
         
-        // Extra Extra Challenge:
-        // Broaden the use case to look at years beyond 2020 - what larger trends can I see?
-        // Either extend current bar chart with animation tweening to show trend changes over the years or come up with a new visualization idiom for comparison.
-
-            console.log(data)
+            // console.log(data)
 
         // Problem 1: What type of serious crime was most common in SG 2020?
         
@@ -61,18 +57,65 @@
 
             //Start Chart
             // set the dimensions and margins of the graph
-            var margin = { top: 0, right: 30, bottom: 200, left: 40 },
-                width = 800 - margin.left - margin.right,
-                height = 800 - margin.top - margin.bottom;
+            var margin = { top: 30, right: 30, bottom: 100, left: 60 },
+                width = 1000 - margin.left - margin.right,
+                height = 675 - margin.top - margin.bottom;
+            // var margin = { top: 30, right: 30, bottom: 70, left: 60 },
+            //     width = 460 - margin.left - margin.right,
+            //     height = 400 - margin.top - margin.bottom;
+
+            // Extra Challenge
+            // https://d3-graph-gallery.com/graph/interactivity_tooltip.html
+            // Add simple interactivity like mouseover tooltips
+            // create a tooltip
+            var Tooltip = d3.select("#div_template")
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("background-color", "white")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px")
+
+            // Three function that change the tooltip when user hover / move / leave a cell
+            var mouseover = function (d) {
+                Tooltip
+                    .style("opacity", 1)
+                d3.select(this)
+                    .style("stroke", "black")
+                    .style("opacity", 1)
+            }
+            var mousemove = function (d) {
+                Tooltip
+                    .html("Total Cases: " + d.value)
+                    .style("left", (d3.mouse(this)[0] + 70) + "px")
+                    .style("top", (d3.mouse(this)[1]) + "px")
+            }
+            var mouseleave = function (d) {
+                Tooltip
+                    .style("opacity", 0)
+                d3.select(this)
+                    .style("stroke", "none")
+                    .style("opacity", 0.8)
+            }
+
+            console.log("height:" + height + " width: " + width);
+            console.log("MT:" + margin.top + " MB: " + margin.bottom);
+            console.log("ML:" + margin.left + " MR: " + margin.righ);
 
             // append the svg object to the body of the page
             var svg = d3.select("#my_dataviz")
                 .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform",
-                    "translate(" + margin.left + "," + margin.top + ")");
+                // EC: Make sure chart is responsive to viewport
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "-250 0 1500 675")
+                // .attr("width", width + margin.left + margin.right)
+                // .attr("height", height + margin.top + margin.bottom)
+
+                    .append("g")
+                    .attr("transform",
+                        "translate(" + margin.left + "," + margin.top + ")");
 
             // // Parse the Data
             // d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/7_OneCatOneNum_header.csv", function (data) {
@@ -102,14 +145,17 @@
                     .data(data)
                     .enter()
                     .append("rect")
-                    .attr("x", function (d) {return x(d.level_2); })
-                    .attr("width", x.bandwidth())
-                    .attr("fill", "#69b3a2")
-                     // no bar at the beginning thus:
-                    .attr("height", function (d) { return height - y(0); }) // always equal to 0
-                    // .attr("height", function (d) { return height - y(d.value); }) // always equal to 0
-                    // .attr("y", function (d) { return y(d.value); })
-                    .attr("y", function (d) { return y(0); })
+                        .attr("x", function (d) {return x(d.level_2); })
+                        .attr("width", x.bandwidth())
+                        .attr("fill", "#69b3a2")
+                        // no bar at the beginning thus:
+                        .attr("height", function (d) { return height - y(0); }) // always equal to 0
+                        // .attr("height", function (d) { return height - y(d.value); }) // always equal to 0
+                        // .attr("y", function (d) { return y(d.value); })
+                        .attr("y", function (d) { return y(0); })
+                    .on("mouseover", mouseover)
+                    .on("mousemove", mousemove)
+                    .on("mouseleave", mouseleave)
 
                 // // Animation
                 svg.selectAll("rect")
@@ -118,6 +164,15 @@
                     .attr("y", function (d) { return y(d.value); })
                     .attr("height", function (d) { return height - y(d.value); })
                     .delay(function (d, i) { console.log(i); return (i * 100) })
+                
+
+        // Extra Challenge
+        // CSS framework to help layout stuff?
+        
+        // Extra Extra Challenge:
+        // Broaden the use case to look at years beyond 2020 - what larger trends can I see?
+        // Either extend current bar chart with animation tweening to show trend changes over the years or come up with a new visualization idiom for comparison.
+
             //End  Chart
         } //appendData function
     </script>
